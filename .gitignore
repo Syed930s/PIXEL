@@ -1,0 +1,36 @@
+```
+# Compressed files
+*.tgz
+
+# Executables/binaries
+fasm
+fasm.x64
+
+# Build artifacts
+*.o
+*.obj
+*.out
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
+.gradle/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Editors
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+```
