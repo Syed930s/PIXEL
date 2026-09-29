@@ -1,15 +1,9 @@
-; ============================================================================
-; PIXEL - DOS GUI File Manager
-; A Windows 3.x style file manager for DOS
-; Written in FASM 8086 compatible assembly
-; ============================================================================
+
 
 format MZ
 stack 2000h
 
-; ============================================================================
-; CONSTANTS AND CONFIGURATION
-; ============================================================================
+
 
 ; File system limits
 MAX_FILES       = 256           ; Maximum number of files in list
@@ -58,16 +52,12 @@ STATUS_H        = 16            ; Status bar height
 INPUT_MAX       = 20            ; Maximum input length
 COPY_BUF_SIZE   = 2048          ; Copy buffer size in bytes
 
-; ============================================================================
-; MAIN PROGRAM SEGMENT
-; ============================================================================
+
 
 segment main
 entry main:start
 
-; ----------------------------------------------------------------------------
-; Program Entry Point
-; ----------------------------------------------------------------------------
+
 start:
     ; Initialize segment registers
     mov ax,cs
@@ -101,13 +91,7 @@ exit_program:
     mov ax,4C00h
     int 21h
 
-; ============================================================================
-; INITIALIZATION MODULE
-; ============================================================================
 
-; ----------------------------------------------------------------------------
-; init_mouse - Check for and initialize mouse driver
-; ----------------------------------------------------------------------------
 init_mouse:
     push es
 
@@ -135,9 +119,7 @@ init_mouse:
 .no_mouse:
     ret
 
-; ----------------------------------------------------------------------------
-; init_font - Load 8x8 VGA font into our buffer
-; ----------------------------------------------------------------------------
+
 init_font:
     push ax
     push bx
@@ -175,9 +157,7 @@ init_font:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; update_layout - Adjust pane positions based on tree visibility
-; ----------------------------------------------------------------------------
+
 update_layout:
     cmp byte [show_tree],0
     je .no_tree
@@ -197,13 +177,6 @@ update_layout:
     mov word [file_w],316
     ret
 
-; ============================================================================
-; PATH AND DIRECTORY MANAGEMENT
-; ============================================================================
-
-; ----------------------------------------------------------------------------
-; update_path - Get current drive and directory path
-; ----------------------------------------------------------------------------
 update_path:
     push ax
     push bx
@@ -286,9 +259,7 @@ update_path:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; change_dir - Change to specified directory
-; ----------------------------------------------------------------------------
+
 change_dir:
     mov ah,3Bh
     int 21h
@@ -303,9 +274,6 @@ change_dir:
     call show_error
     ret
 
-; ----------------------------------------------------------------------------
-; change_drive - Switch to specified drive (A-D)
-; ----------------------------------------------------------------------------
 change_drive:
     cmp al,3
     ja .done
@@ -320,10 +288,7 @@ change_drive:
 .done:
     ret
 
-; ----------------------------------------------------------------------------
-; build_full_path - Combine current path with relative path
-; Input: SI = relative path, DI = destination buffer
-; ----------------------------------------------------------------------------
+
 build_full_path:
     mov [tmp_src],si
     mov [tmp_dst],di
@@ -354,13 +319,7 @@ build_full_path:
     call str_copy
     ret
 
-; ============================================================================
-; FILE AND TREE LIST REFRESH
-; ============================================================================
 
-; ----------------------------------------------------------------------------
-; refresh_all - Rebuild both file and tree lists
-; ----------------------------------------------------------------------------
 refresh_all:
     call refresh_tree
     call refresh_files
@@ -372,10 +331,6 @@ refresh_all:
     mov word [tree_scroll],0
 
     ret
-
-; ----------------------------------------------------------------------------
-; refresh_files - Scan directory and build file list
-; ----------------------------------------------------------------------------
 refresh_files:
     ; Set DTA (Disk Transfer Area)
     mov ah,1Ah
@@ -440,9 +395,6 @@ refresh_files:
     call sort_file_list
     ret
 
-; ----------------------------------------------------------------------------
-; refresh_tree - Scan directory and build tree (directory) list
-; ----------------------------------------------------------------------------
 refresh_tree:
     ; Set DTA
     mov ah,1Ah
@@ -538,10 +490,7 @@ add_file_entry:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; add_tree_entry - Add a directory to the tree list
-; Input: SI=name
-; ----------------------------------------------------------------------------
+
 add_tree_entry:
     push ax
     push bx
@@ -578,10 +527,6 @@ add_tree_entry:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; copy_name13 - Copy up to 13 characters, null-pad if shorter
-; Input: SI=source, ES:DI=destination
-; ----------------------------------------------------------------------------
 copy_name13:
     push ds
     pop es
@@ -607,13 +552,7 @@ copy_name13:
 .done:
     ret
 
-; ============================================================================
-; SORTING MODULE
-; ============================================================================
 
-; ----------------------------------------------------------------------------
-; sort_file_list - Bubble sort file list by selected criteria
-; ----------------------------------------------------------------------------
 sort_file_list:
     cmp word [file_count],2
     jb .done
@@ -661,10 +600,7 @@ sort_file_list:
 .done:
     ret
 
-; ----------------------------------------------------------------------------
-; compare_entries - Compare two file entries
-; Returns: CF=0 if i<=j, CF=1 if i>j
-; ----------------------------------------------------------------------------
+
 compare_entries:
     push ax
     push bx
@@ -757,9 +693,7 @@ compare_entries:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; swap_entries - Swap two file entries in the list
-; ----------------------------------------------------------------------------
+
 swap_entries:
     push ax
     push bx
@@ -798,10 +732,7 @@ swap_entries:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; get_file_entry - Get pointer to file entry by index
-; Input: BX=index, Output: SI=pointer
-; ----------------------------------------------------------------------------
+
 get_file_entry:
     push ax
     push dx
@@ -817,10 +748,7 @@ get_file_entry:
     pop ax
     ret
 
-; ----------------------------------------------------------------------------
-; get_tree_entry - Get pointer to tree entry by index
-; Input: BX=index, Output: SI=pointer
-; ----------------------------------------------------------------------------
+
 get_tree_entry:
     push ax
     push dx
@@ -836,13 +764,6 @@ get_tree_entry:
     pop ax
     ret
 
-; ============================================================================
-; INPUT HANDLING MODULE
-; ============================================================================
-
-; ----------------------------------------------------------------------------
-; process_input - Main input dispatcher (keyboard and mouse)
-; ----------------------------------------------------------------------------
 process_input:
     ; Check for keyboard input
     mov ah,1
@@ -888,9 +809,6 @@ process_input:
 .done:
     ret
 
-; ----------------------------------------------------------------------------
-; handle_keyboard - Process keyboard input
-; ----------------------------------------------------------------------------
 handle_keyboard:
     ; If menu is open, handle menu navigation
     cmp byte [menu_open],0
@@ -1014,9 +932,7 @@ handle_keyboard:
 .done:
     ret
 
-; ----------------------------------------------------------------------------
-; handle_mouse_down - Process mouse button press
-; ----------------------------------------------------------------------------
+
 handle_mouse_down:
     mov ax,[mouse_y]
 
@@ -1154,9 +1070,7 @@ handle_mouse_down:
 .done:
     ret
 
-; ----------------------------------------------------------------------------
-; handle_mouse_up - Process mouse button release
-; ----------------------------------------------------------------------------
+
 handle_mouse_up:
     cmp byte [menu_open],0
     je .done
@@ -1170,9 +1084,7 @@ handle_mouse_up:
 .done:
     ret
 
-; ----------------------------------------------------------------------------
-; handle_toolbar_click - Handle toolbar button clicks
-; ----------------------------------------------------------------------------
+
 handle_toolbar_click:
     mov ax,[mouse_x]
 
